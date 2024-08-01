@@ -16,13 +16,13 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.connector.pulsar.source.PulsarSource;
 import org.apache.flink.table.api.DataTypes;
 import org.apache.flink.table.api.TableSchema;
-import org.apache.pulsar.client.api.SubscriptionType;
 
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 
-public class PulsarToDB {
+import static org.apache.flink.streaming.api.environment.ExecutionCheckpointingOptions.ENABLE_CHECKPOINTS_AFTER_TASKS_FINISH;
+
+public class MongoPulsarToDB {
 
     public static void main(String[] args) throws Exception {
 
@@ -37,14 +37,21 @@ public class PulsarToDB {
 
         PulsarSource<String> source = PulsarSource.<String>builder()
                 .setServiceUrl(serviceUrl)
-                .setStartCursor(StartCursor.earliest())
+                .setStartCursor(StartCursor.latest())
                 .setTopics(topic)
                 .setDeserializationSchema(new SimpleStringSchema())
                 .setSubscriptionName("my-subscription")
                 .build();
 
         // 获取 Flink 执行环境
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        Configuration config = new Configuration();
+
+        config.set(ENABLE_CHECKPOINTS_AFTER_TASKS_FINISH, true);
+        config.setInteger(RestOptions.PORT, 9999);
+
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
+        // enable checkpoint
+        env.enableCheckpointing(3000);
 
         // 定义StarRocks的连接配置
         StarRocksSinkOptions options = StarRocksSinkOptions.builder()
@@ -95,36 +102,6 @@ public class PulsarToDB {
 
             return new Product(id, name, description, weight);
         }).addSink(StarRocksSink.sink(schema, options, productRowBuilder));
-
-
-
-        // 将 Pulsar Source 添加到 Flink 流中，并进行转换、打印和存储
-        /*env.fromSource(source, WatermarkStrategy.noWatermarks(), "Pulsar Source")
-                .map(new MapFunction<String, Product>() {
-                    @Override
-                    public Product map(String value) throws Exception {
-                        // 解析 JSON 字符串中的 fullDocument 部分
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        JsonNode jsonNode = objectMapper.readTree(value);
-                        JsonNode documentNode = jsonNode.get("fullDocument");
-
-                        // 创建 Product 对象
-                        Product product = new Product();
-
-                        JsonNode idNode = documentNode.get("_id");
-                        product.setId(idNode.get("$oid").asText());
-                        product.setName(documentNode.get("name").asText());
-                        product.setDescription(documentNode.get("description").asText());
-                        product.setWeight(documentNode.get("weight").asDouble());
-
-                        // 打印 Product 对象
-                        System.out.println(product);
-
-                        return product;
-                    }
-                })
-                // 添加 StarRocks Sink 将 Product 对象存储到数据库
-                .addSink(StarRocksSink.sink(schema, options, productRowBuilder));*/
 
         // 执行 Flink 作业
         env.execute("PulsarToDBJob");
