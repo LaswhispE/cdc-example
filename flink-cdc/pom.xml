@@ -59,6 +59,13 @@
       <version>1.2.9_flink-1.18</version>
     </dependency>
 
+    <dependency>
+      <groupId>io.debezium</groupId>
+      <artifactId>debezium-core</artifactId>
+      <version>${debezium.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
@@ -78,6 +85,18 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>com.esri.geometry</groupId>
+      <artifactId>esri-geometry-api</artifactId>
+      <version>${geometry.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.fasterxml.jackson.core</groupId>
+          <artifactId>jackson-core</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
     <!-- Debezium dependencies -->
     <dependency>
       <groupId>org.apache.flink</groupId>
@@ -89,6 +108,12 @@
           <groupId>org.apache.kafka</groupId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>io.debezium</groupId>
+      <artifactId>debezium-connector-mysql</artifactId>
+      <version>${debezium.version}</version>
     </dependency>
 
     <dependency>

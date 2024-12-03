@@ -2,8 +2,6 @@ package source;
 
 import org.apache.pulsar.client.api.*;
 
-import java.util.concurrent.TimeUnit;
-
 public class PulsarConsumerExample2 {
 
     private static final String SERVICE_URL = "pulsar://localhost:6650"; // Pulsar集群URL

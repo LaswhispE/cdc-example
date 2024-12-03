@@ -1,10 +1,6 @@
 package source;
 
-import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.api.*;
-import org.apache.pulsar.common.policies.data.PartitionedTopicStats;
-
-import java.util.concurrent.TimeUnit;
 
 public class PulsarConsumerExample {
 

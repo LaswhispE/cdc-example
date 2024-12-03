@@ -1,0 +1,43 @@
+services:
+  mongo:
+    restart: always
+    image: mongo:4.2.0
+    volumes:
+      - mongo:/data/db
+#      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    command: mongod --replSet rs0
+    networks:
+      - backend_network
+    ports:
+      - "27017:27017"
+
+  pulsar:
+    image: apachepulsar/pulsar:3.3.0
+    command: bin/pulsar standalone
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+#    volumes:
+#      - pulsar:/pulsar/data
+    networks:
+      - backend_network
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - /d/prometheus:/etc/prometheus
+      - prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - backend_network
+    ports:
+      - "9090:9090"
+
+networks:
+  backend_network:
+
+volumes:
+  mongo:
+#  pulsar:
+  prometheus:

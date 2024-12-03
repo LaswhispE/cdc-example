@@ -20,7 +20,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class DataAdd{
+public class  DataAdd{
     private static final Logger LOG = LoggerFactory.getLogger(DataAdd.class);
     private static MongoClient mongodbClient;
     public static void main(String[] args) throws Exception {
@@ -61,7 +61,7 @@ public class DataAdd{
         List<Document> documents = new ArrayList<>();
 
         // 添加三个Document到列表中
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5000; i++) {
             documents.add(new Document()
                     .append("name", "spare tire " + i)
                     .append("description", "")
