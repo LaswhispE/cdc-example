@@ -25,8 +25,8 @@ public class MySqlConnector {
         MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
                 .hostname("10.49.2.7")
                 .port(3306)
-                .databaseList("test_erp_1")
-                .tableList("test_erp_1.product_mws")
+                .databaseList("test")
+                .tableList("test.test")
                 .username("bigdata_user")
                 .password("4Lme3Bn0wdkRY@5qM3a2j0ISE")
                 .deserializer(new JsonDebeziumDeserializationSchema())
@@ -51,18 +51,19 @@ public class MySqlConnector {
         config.setInteger(RestOptions.PORT, 8086);
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
-        env.enableCheckpointing(3000);
+        env.setParallelism(2);
+        env.enableCheckpointing(300000);
 
         // 从 MySQL 源读取数据，并设置并行度
         DataStream<String> mySqlDS = env.fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySQLParallelSource")
-                .setParallelism(4);
+                .setParallelism(1);
 
 
         // 配置 Pulsar 接收端
-        PulsarSink<String> sink = PulsarSink.<String>builder()
+        // 配置Pulsar
+        PulsarSink<String> sink = PulsarSink.builder()
                 .setServiceUrl("pulsar://localhost:6650")
-                .setTopics("persistent://public/default/mysql-topic")
-
+                .setTopics("persistent://public/default/my-topic")
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                 .setSerializationSchema(new SimpleStringSchema())
                 .build();
