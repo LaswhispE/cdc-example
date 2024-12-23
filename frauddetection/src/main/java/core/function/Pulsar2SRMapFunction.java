@@ -8,6 +8,8 @@ public class Pulsar2SRMapFunction extends RichMapFunction<String, DefaultStarRoc
 
     public Pulsar2SRMapFunction() {}
 
+
+    //  这个类没用，不用看
     @Override
     public DefaultStarRocksRowData map(String value) throws Exception {
         DefaultStarRocksRowData rowDataWithMeta = new DefaultStarRocksRowData();

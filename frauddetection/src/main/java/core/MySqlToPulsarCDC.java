@@ -20,27 +20,17 @@ public class MySqlToPulsarCDC {
     public static void main(String[] args) throws Exception {
         // 创建 MySQL 源
         MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
-                .hostname("10.49.2.7")
+                .hostname("localhost")
                 .port(3306)
                 .databaseList("test")
                 .tableList("test.test")
-                .username("bigdata_user")
-                .password("4Lme3Bn0wdkRY@5qM3a2j0ISE")
+                .username("root")
+                .password("root")
                 .deserializer(new JsonDebeziumDeserializationSchema())
 //                .startupOptions(StartupOptions.latest())
+                .serverTimeZone("UTC")  // 设置为与 MySQL 服务器一致的时区
                 .build();
 
-        /*// 测试
-        MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
-                .hostname("10.49.26.33")
-                .port(9030)
-                .databaseList("test")
-                .tableList("test.product")
-                .username("bigdata_user")
-                .password("stars@rNi0oG8xHe6yeeOIplm")
-                .deserializer(new JsonDebeziumDeserializationSchema())
-//                .startupOptions(StartupOptions.latest())
-                .build();*/
 
         // 配置
         Configuration config = new Configuration();

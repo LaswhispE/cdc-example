@@ -3,7 +3,6 @@ package core;
 import com.starrocks.connector.flink.table.data.DefaultStarRocksRowData;
 import com.starrocks.connector.flink.table.sink.StarRocksSinkOptions;
 import core.function.BasicMapFunction;
-import core.function.Pulsar2SRMapFunction;
 import core.sink.StarRocksSink;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
