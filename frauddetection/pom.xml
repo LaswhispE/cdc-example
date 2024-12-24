@@ -178,46 +178,73 @@ under the License.
 		</dependency>
 
 
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver-sync</artifactId>
-			<version>4.9.1</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mongodb</groupId>-->
+<!--			<artifactId>mongodb-driver-sync</artifactId>-->
+<!--			<version>4.9.1</version>-->
+<!--		</dependency>-->
 
-		<dependency>
-			<groupId>org.mongodb</groupId>
-			<artifactId>mongodb-driver-core</artifactId>
-			<version>4.9.1</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mongodb</groupId>-->
+<!--			<artifactId>mongodb-driver-core</artifactId>-->
+<!--			<version>4.9.1</version>-->
+<!--		</dependency>-->
+
 		<!-- MongoDB Cryptd for Encryption Support -->
-		<dependency>
-			<groupId>org.mongodb.kafka</groupId>
-			<artifactId>mongo-kafka-connect</artifactId>
-			<version>1.10.1</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>mongodb-driver-sync</artifactId>
-					<groupId>org.mongodb</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>connect-api</artifactId>
-					<groupId>org.apache.kafka</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mongodb.kafka</groupId>-->
+<!--			<artifactId>mongo-kafka-connect</artifactId>-->
+<!--			<version>1.10.1</version>-->
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<artifactId>mongodb-driver-sync</artifactId>-->
+<!--					<groupId>org.mongodb</groupId>-->
+<!--				</exclusion>-->
+<!--				<exclusion>-->
+<!--					<artifactId>connect-api</artifactId>-->
+<!--					<groupId>org.apache.kafka</groupId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.mongodb</groupId>
 			<artifactId>bson</artifactId>
-			<version>4.7.0</version> <!-- 请根据需要选择最新版本 -->
+			<version>4.9.1</version> <!-- 请根据需要选择最新版本 -->
 		</dependency>
+
+<!--		<dependency>-->
+<!--			<groupId>com.ververica</groupId>-->
+<!--			<artifactId>flink-sql-connector-mongodb-cdc</artifactId>-->
+<!--			<version>2.4.1</version>-->
+<!--			<scope>provided</scope>-->
+<!--			<exclusions>-->
+<!--				<exclusion>-->
+<!--					<artifactId>flink-shaded-guava</artifactId>-->
+<!--					<groupId>org.apache.flink</groupId>-->
+<!--				</exclusion>-->
+<!--			</exclusions>-->
+<!--		</dependency>-->
+
+<!--		<dependency>-->
+<!--			<groupId>org.apache.flink</groupId>-->
+<!--			<artifactId>flink-connector-mongodb</artifactId>-->
+<!--			<version>1.2.0-1.18</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>com.ververica</groupId>
 			<artifactId>flink-sql-connector-mongodb-cdc</artifactId>
 			<version>3.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-runtime-web</artifactId>
+			<version>1.18.1</version>
 			<scope>provided</scope>
 		</dependency>
+
 
 		<!-- Add connector dependencies here. They must be in the default scope (compile). -->
 

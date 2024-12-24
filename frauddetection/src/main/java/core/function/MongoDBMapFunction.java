@@ -3,7 +3,6 @@ package core.function;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.starrocks.connector.flink.table.data.DefaultStarRocksRowData;
-import io.debezium.data.Envelope;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.configuration.Configuration;
 
@@ -11,7 +10,7 @@ import org.apache.flink.configuration.Configuration;
  * @Author ZhuHaiBo
  * @Create 2022/1/11 18:35
  */
-public class BasicMapFunction extends RichMapFunction<String, DefaultStarRocksRowData> {
+public class MongoDBMapFunction extends RichMapFunction<String, DefaultStarRocksRowData> {
 
     private Integer taskNum;
 
@@ -22,24 +21,35 @@ public class BasicMapFunction extends RichMapFunction<String, DefaultStarRocksRo
 
     @Override
     public DefaultStarRocksRowData map(String value) throws Exception {
+
+        System.out.println("value: " + value);
         JSONObject data = JSON.parseObject(value);
-        JSONObject source = data.getJSONObject("source");
-        String op = data.getString("op");
+        JSONObject source = data.getJSONObject("ns");
+        String op = data.getString("operationType");
         JSONObject record = null;
 
-        String tableName = source.getString("table");
+        String tableName = source.getString("coll");
         String database = source.getString("db");
 
-        if ("c".equals(op) || "u".equals(op) || "r".equals(op)) {
-            record = data.getJSONObject("after");
+        if ("insert".equals(op) || "update".equals(op)) {
+            record = data.getJSONObject("fullDocument");
 
-        } else if ("d".equals(op)) {
-            record = data.getJSONObject("before");
+            // 提取 _id 中的 $oid 值
+            JSONObject idObject = record.getJSONObject("_id");
+            if (idObject != null) {
+                String oid = idObject.getString("$oid");
+                record.put("_id", oid);
+            }
+            record.put ("__op", 0);
+
+        } else if ("delete".equals(op)) {
+            record = data.getJSONObject("fullDocument");
+            record.put ("__op", 1);
         }
         if (record == null) {
             throw new RuntimeException("Invalid operation type: " + op);
         }
-        record.put("__op", Envelope.Operation.DELETE.code().equals(op) ? 1 : 0);
+//        record.put("__op", Envelope.Operation.DELETE.code().equals(op) ? 1 : 0);
 
         System.out.println("taskNum: " + record.toJSONString());
 

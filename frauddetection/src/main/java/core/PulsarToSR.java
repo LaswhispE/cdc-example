@@ -1,7 +1,7 @@
 package core;
 
 import com.starrocks.connector.flink.table.sink.StarRocksSinkOptions;
-import core.function.MySQLMapFunction;
+import core.function.MongoDBMapFunction;
 import core.sink.StarRocksSink;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class PulsarToStarRocks {
+public class PulsarToSR {
     public static void main(String[] args) throws Exception {
 
         Configuration configuration = new Configuration();
@@ -50,7 +50,7 @@ public class PulsarToStarRocks {
         env.fromSource(pulsarSource, WatermarkStrategy.noWatermarks(), "Pulsar Source")
                 .uid("uid_pulsar_source")
                 .name("name_pulsar_source")
-                .map(new MySQLMapFunction())
+                .map(new MongoDBMapFunction())
                 .uid("uid_map")
                 .name("name_map")
 //                .keyBy((KeySelector<DefaultStarRocksRowData, String>) value ->
@@ -61,7 +61,7 @@ public class PulsarToStarRocks {
                                         .withProperty("jdbc-url", "jdbc:mysql://localhost:9030")
                                         .withProperty("load-url", "localhost:8030")
                                         .withProperty("database-name", "test")
-                                        .withProperty("table-name", "test")
+                                        .withProperty("table-name", "test2")
                                         .withProperty("username", "root")
                                         .withProperty("password", "")
                                         .withProperty("sink.max-retries", "3")
