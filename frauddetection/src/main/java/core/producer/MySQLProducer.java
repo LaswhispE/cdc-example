@@ -4,68 +4,79 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MySQLProducer {
 
-    private static final String URL = "jdbc:mysql://10.49.2.7:3306/test";
-    private static final String USER = "bigdata_user";
-    private static final String PASSWORD = "4Lme3Bn0wdkRY@5qM3a2j0ISE";
+    private static final String URL = "jdbc:mysql://localhost:3306/test";
+    private static final String USER = "root";
+    private static final String PASSWORD = "root";
     private static final String INSERT_SQL = "INSERT INTO test (name) VALUES (?)";
 
     // 创建日志记录器实例
-    private static final Logger logger = Logger.getLogger(MySQLProducer.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(MySQLProducer.class);
 
-    public static void main(String[] args) {
-        // 创建 Timer 实例
-        Timer timer = new Timer();
-
-        // 创建 TimerTask，每秒执行一次
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                // 每秒插入 10000 条数据
-                for (int i = 0; i < 10000; i++) {
-                    insertData();
-                }
-            }
-        };
-
-        // 安排 TimerTask，每秒执行一次
-        timer.schedule(task, 0, 1000);
+    public static void main(String[] args) throws Exception {
+        startScheduledInsertion();
     }
 
+    // 启动定时插入任务
+    public static void startScheduledInsertion() {
+        // 创建ScheduledExecutorService实例
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+        // 定义一个任务，每隔1秒执行一次insertData方法
+        Runnable insertTask = MySQLProducer::insertData;
+        executorService.scheduleAtFixedRate(insertTask, 0, 1, TimeUnit.SECONDS);
+    }
+
+    // 插入数据
     private static void insertData() {
-        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
-             PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
+        List<String> names = generateRandomNames(10000);
 
-            // 设置随机名称
-            String randomName = generateRandomName();
-            statement.setString(1, randomName);
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
+            connection.setAutoCommit(false); // 关闭自动提交，批量插入
 
-            // 执行插入操作
-            int affectedRows = statement.executeUpdate();
-            if (affectedRows > 0) {
-                // 插入成功，记录日志
-                logger.info("Data inserted successfully: name = " + randomName);
+            try (PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
+                for (String name : names) {
+                    statement.setString(1, name);
+                    statement.addBatch();
+                }
+
+                int[] affectedRows = statement.executeBatch();
+                connection.commit(); // 提交事务
+
+                LOG.info("Inserted " + affectedRows.length + " rows.");
+            } catch (SQLException e) {
+                connection.rollback(); // 回滚事务
+                LOG.error("Failed to insert data: " + e.getMessage());
+                e.printStackTrace();
             }
         } catch (SQLException e) {
-            // 记录异常日志
-            logger.severe("Failed to insert data: " + e.getMessage());
+            LOG.error("Failed to connect to database: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private static String generateRandomName() {
+    // 生成随机字符串列表
+    private static List<String> generateRandomNames(int count) {
+        List<String> names = new ArrayList<>(count);
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-        StringBuilder stringBuilder = new StringBuilder();
         Random random = new Random();
-        for (int i = 0; i < 10; i++) {
-            stringBuilder.append(characters.charAt(random.nextInt(characters.length())));
+        for (int i = 0; i < count; i++) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int j = 0; j < 8; j++) {
+                stringBuilder.append(characters.charAt(random.nextInt(characters.length())));
+            }
+            names.add(stringBuilder.toString());
         }
-        return stringBuilder.toString();
+        return names;
     }
 }
