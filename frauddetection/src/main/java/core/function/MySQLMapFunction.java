@@ -23,7 +23,7 @@ public class MySQLMapFunction extends RichMapFunction<String, DefaultStarRocksRo
     @Override
     public DefaultStarRocksRowData map(String value) throws Exception {
 
-        System.out.println("value: " + value);
+//        System.out.println("value: " + value);
         JSONObject data = JSON.parseObject(value);
         JSONObject source = data.getJSONObject("source");
         String op = data.getString("op");
@@ -43,7 +43,7 @@ public class MySQLMapFunction extends RichMapFunction<String, DefaultStarRocksRo
         }
         record.put("__op", Envelope.Operation.DELETE.code().equals(op) ? 1 : 0);
 
-        System.out.println("taskNum: " + record.toJSONString());
+//        System.out.println("taskNum: " + record.toJSONString());
 
         DefaultStarRocksRowData defaultStarRocksRowData = new DefaultStarRocksRowData();
         defaultStarRocksRowData.setUniqueKey(database + "_" + tableName);

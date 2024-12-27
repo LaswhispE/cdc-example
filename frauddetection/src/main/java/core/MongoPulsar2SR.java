@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class PulsarToSR {
+public class MongoPulsar2SR {
     public static void main(String[] args) throws Exception {
 
         Configuration configuration = new Configuration();
@@ -61,7 +61,7 @@ public class PulsarToSR {
                                         .withProperty("jdbc-url", "jdbc:mysql://localhost:9030")
                                         .withProperty("load-url", "localhost:8030")
                                         .withProperty("database-name", "test")
-                                        .withProperty("table-name", "test2")
+                                        .withProperty("table-name", "product")
                                         .withProperty("username", "root")
                                         .withProperty("password", "")
                                         .withProperty("sink.max-retries", "3")

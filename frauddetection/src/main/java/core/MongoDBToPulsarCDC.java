@@ -1,6 +1,7 @@
 package core;
 
 
+import com.ververica.cdc.connectors.base.options.StartupOptions;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.connector.base.DeliveryGuarantee;
@@ -28,23 +29,22 @@ public class MongoDBToPulsarCDC {
 
     public static void main(String[] args) throws Exception {
 
-//        String database = CONTAINER.executeCommandFileInSeparateDatabase("inventory");
         MongoDBSource<String> mongoSource =
                 MongoDBSource.<String>builder()
                         .hosts("localhost:27017")
 //                        .username("root")
 //                        .password("root")
                         .databaseList("test")
-                        .collectionList("test.test2")
+                        .collectionList("test.product")
                         .deserializer(new JsonDebeziumDeserializationSchema())
-//                        .startupOptions(StartupOptions.latest())
-//                        .closeIdleReaders(true)
+                        .startupOptions(StartupOptions.latest())
+                        .closeIdleReaders(true)
                         .build();
 
         Configuration config = new Configuration();
 
         config.set(ENABLE_CHECKPOINTS_AFTER_TASKS_FINISH, true);
-//        config.setInteger(RestOptions.PORT, 8087);
+        config.setInteger(RestOptions.PORT, 8087);
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(config);
 

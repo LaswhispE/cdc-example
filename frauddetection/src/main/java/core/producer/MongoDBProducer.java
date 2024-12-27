@@ -44,7 +44,7 @@ public class MongoDBProducer {
     public static void startScheduledInsertion() {
         // 获取数据库引用，例如使用test数据库和test2集合
         MongoDatabase database = mongoClient.getDatabase("test");
-        String collectionName = "test2";
+        String collectionName = "product";
 
         // 创建ScheduledExecutorService实例
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -61,7 +61,8 @@ public class MongoDBProducer {
         List<Document> documents = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
             documents.add(new Document()
-                    .append("name", generateRandomString(8))); // 随机生成的8位字符串
+                    .append("product_id", generateRandomNumber(8))
+                    .append("product_info", generateRandomString(8))); // 随机生成的8位字符串
         }
 
         collection.insertMany(documents); // 批量插入文档
@@ -75,6 +76,16 @@ public class MongoDBProducer {
         StringBuilder stringBuilder = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             stringBuilder.append(characters.charAt(random.nextInt(characters.length())));
+        }
+        return stringBuilder.toString();
+    }
+
+    // 生成随机数字
+    private static String generateRandomNumber(int length) {
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            stringBuilder.append(random.nextInt(10)); // 生成0-9之间的数字
         }
         return stringBuilder.toString();
     }

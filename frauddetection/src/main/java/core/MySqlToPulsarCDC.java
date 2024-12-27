@@ -2,6 +2,7 @@ package core;
 
 
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
+import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
@@ -23,11 +24,11 @@ public class MySqlToPulsarCDC {
                 .hostname("localhost")
                 .port(3306)
                 .databaseList("test")
-                .tableList("test.test")
+                .tableList("test.user")
                 .username("root")
                 .password("root")
                 .deserializer(new JsonDebeziumDeserializationSchema())
-//                .startupOptions(StartupOptions.latest())
+                .startupOptions(StartupOptions.latest())
                 .serverTimeZone("UTC")  // 设置为与 MySQL 服务器一致的时区
                 .build();
 

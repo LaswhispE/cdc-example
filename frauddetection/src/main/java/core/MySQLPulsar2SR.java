@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
-public class PulsarToStarRocks {
+public class MySQLPulsar2SR {
     public static void main(String[] args) throws Exception {
 
         Configuration configuration = new Configuration();
@@ -27,7 +27,7 @@ public class PulsarToStarRocks {
         // 创建 Pulsar 数据源
         PulsarSource<String> pulsarSource = PulsarSource.<String>builder()
                 .setServiceUrl("pulsar://localhost:6650")
-                .setTopics("persistent://public/default/my-topic2")
+                .setTopics("persistent://public/default/my-topic")
                 .setDeserializationSchema(new SimpleStringSchema())
                 .setSubscriptionName("fixed_subscription_name")
                 .build();
@@ -61,7 +61,7 @@ public class PulsarToStarRocks {
                                         .withProperty("jdbc-url", "jdbc:mysql://localhost:9030")
                                         .withProperty("load-url", "localhost:8030")
                                         .withProperty("database-name", "test")
-                                        .withProperty("table-name", "test")
+                                        .withProperty("table-name", "user")
                                         .withProperty("username", "root")
                                         .withProperty("password", "")
                                         .withProperty("sink.max-retries", "3")

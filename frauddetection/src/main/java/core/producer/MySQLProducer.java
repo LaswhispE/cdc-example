@@ -18,7 +18,7 @@ public class MySQLProducer {
     private static final String URL = "jdbc:mysql://localhost:3306/test";
     private static final String USER = "root";
     private static final String PASSWORD = "root";
-    private static final String INSERT_SQL = "INSERT INTO test (name) VALUES (?)";
+    private static final String INSERT_SQL = "INSERT INTO user (username,password) VALUES (?,?)";
 
     // 创建日志记录器实例
     private static final Logger LOG = LoggerFactory.getLogger(MySQLProducer.class);
@@ -39,14 +39,16 @@ public class MySQLProducer {
 
     // 插入数据
     private static void insertData() {
-        List<String> names = generateRandomNames(10000);
+        List<String> usernames = generateRandomString(100);
+        List<String> passwords = generateRandomString(100); // 注意这里应该是 passwords 而不是 password
 
         try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD)) {
-            connection.setAutoCommit(false); // 关闭自动提交，批量插入
+            connection.setAutoCommit(false); // 关闭自动提交
 
             try (PreparedStatement statement = connection.prepareStatement(INSERT_SQL)) {
-                for (String name : names) {
-                    statement.setString(1, name);
+                for (int i = 0; i < usernames.size(); i++) {
+                    statement.setString(1, usernames.get(i));
+                    statement.setString(2, passwords.get(i)); // 同时设置用户名和密码
                     statement.addBatch();
                 }
 
@@ -55,18 +57,15 @@ public class MySQLProducer {
 
                 LOG.info("Inserted " + affectedRows.length + " rows.");
             } catch (SQLException e) {
-                connection.rollback(); // 回滚事务
-                LOG.error("Failed to insert data: " + e.getMessage());
-                e.printStackTrace();
+                connection.rollback(); // 如果发生异常，回滚事务
+                LOG.error("Error inserting data", e);
             }
         } catch (SQLException e) {
-            LOG.error("Failed to connect to database: " + e.getMessage());
-            e.printStackTrace();
+            LOG.error("Error connecting to database", e);
         }
     }
-
     // 生成随机字符串列表
-    private static List<String> generateRandomNames(int count) {
+    private static List<String> generateRandomString(int count) {
         List<String> names = new ArrayList<>(count);
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         Random random = new Random();

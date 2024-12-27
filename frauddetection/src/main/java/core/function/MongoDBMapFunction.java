@@ -22,7 +22,7 @@ public class MongoDBMapFunction extends RichMapFunction<String, DefaultStarRocks
     @Override
     public DefaultStarRocksRowData map(String value) throws Exception {
 
-        System.out.println("value: " + value);
+//        System.out.println("value: " + value);
         JSONObject data = JSON.parseObject(value);
         JSONObject source = data.getJSONObject("ns");
         String op = data.getString("operationType");
@@ -51,7 +51,7 @@ public class MongoDBMapFunction extends RichMapFunction<String, DefaultStarRocks
         }
 //        record.put("__op", Envelope.Operation.DELETE.code().equals(op) ? 1 : 0);
 
-        System.out.println("taskNum: " + record.toJSONString());
+//        System.out.println("taskNum: " + record.toJSONString());
 
         DefaultStarRocksRowData defaultStarRocksRowData = new DefaultStarRocksRowData();
         defaultStarRocksRowData.setUniqueKey(database + "_" + tableName);
